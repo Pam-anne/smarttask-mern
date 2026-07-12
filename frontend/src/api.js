@@ -31,7 +31,13 @@ export const api = {
   register: (payload) =>
     request("/auth/register", { method: "POST", body: payload }),
   login: (payload) => request("/auth/login", { method: "POST", body: payload }),
-  getTasks: () => request("/tasks"),
+  getTasks: (params = {}) => {
+    // Drop empty values so we only send the filters the user actually set.
+    const query = new URLSearchParams(
+      Object.entries(params).filter(([, v]) => v !== "" && v != null)
+    ).toString();
+    return request(`/tasks${query ? `?${query}` : ""}`);
+  },
   createTask: (payload) =>
     request("/tasks", { method: "POST", body: payload }),
   updateTask: (id, payload) =>

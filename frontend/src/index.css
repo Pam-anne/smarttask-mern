@@ -208,6 +208,14 @@ button:disabled {
   color: var(--muted);
 }
 
+.controls {
+  margin-bottom: 16px;
+}
+
+.controls .row {
+  margin-top: 12px;
+}
+
 .task-actions {
   display: flex;
   align-items: center;
