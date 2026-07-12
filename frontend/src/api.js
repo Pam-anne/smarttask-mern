@@ -2,7 +2,10 @@
 // The JWT (saved after login) is attached to every request so the
 // protected task endpoints accept it.
 
-const BASE = "/api";
+// In development we use "/api" and let the Vite proxy forward to the backend.
+// In production set VITE_API_URL to the deployed backend, e.g.
+//   VITE_API_URL=https://smarttask-api.onrender.com/api
+const BASE = import.meta.env.VITE_API_URL || "/api";
 
 function getToken() {
   return localStorage.getItem("token");

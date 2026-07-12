@@ -3,6 +3,7 @@ import { api } from "./api.js";
 import AuthForm from "./components/AuthForm.jsx";
 import TaskForm from "./components/TaskForm.jsx";
 import TaskControls from "./components/TaskControls.jsx";
+import TaskStats from "./components/TaskStats.jsx";
 import TaskList from "./components/TaskList.jsx";
 
 const DEFAULT_FILTERS = {
@@ -83,6 +84,7 @@ export default function App() {
         <TaskForm onCreated={() => loadTasks()} />
 
         <section>
+          <TaskStats tasks={tasks} />
           <TaskControls filters={filters} onChange={setFilters} />
 
           <h3>My tasks ({tasks.length})</h3>

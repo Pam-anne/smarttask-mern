@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { api } from "../api.js";
+import { useToast } from "../context/ToastContext.jsx";
 
 const STATUS_LABELS = {
   pending: "Pending",
@@ -23,23 +24,33 @@ function toDateInput(value) {
   return new Date(value).toISOString().slice(0, 10);
 }
 
+// A task is overdue if its deadline has passed and it isn't completed yet.
+function isOverdue(task) {
+  if (!task.deadline || task.status === "completed") return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return new Date(task.deadline) < today;
+}
+
 /**
- * A single task. Shows a read-only view with Edit/Delete actions, and
- * switches to an inline edit form when the user clicks Edit.
+ * A single task. Shows a read-only view with a quick-complete checkbox and
+ * Edit/Delete actions, and switches to an inline edit form when editing.
  */
 export default function TaskItem({ task, onUpdated, onDeleted }) {
+  const toast = useToast();
   const [editing, setEditing] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
 
-  // Local form state, seeded from the task.
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description || "");
   const [status, setStatus] = useState(task.status);
   const [deadline, setDeadline] = useState(toDateInput(task.deadline));
 
+  const overdue = isOverdue(task);
+  const done = task.status === "completed";
+
   function startEdit() {
-    // Reset the fields to the current task values before editing.
     setTitle(task.title);
     setDescription(task.description || "");
     setStatus(task.status);
@@ -53,17 +64,29 @@ export default function TaskItem({ task, onUpdated, onDeleted }) {
     setBusy(true);
     setError("");
     try {
-      const payload = {
-        title,
-        description,
-        status,
-        deadline: deadline || null,
-      };
+      const payload = { title, description, status, deadline: deadline || null };
       const res = await api.updateTask(task._id, payload);
       onUpdated(res.data);
       setEditing(false);
+      toast("Task updated");
     } catch (err) {
       setError(err.message);
+      toast(err.message, "error");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  // Quick toggle between completed and pending straight from the list.
+  async function toggleComplete() {
+    setBusy(true);
+    try {
+      const next = done ? "pending" : "completed";
+      const res = await api.updateTask(task._id, { status: next });
+      onUpdated(res.data);
+      toast(next === "completed" ? "Marked complete" : "Marked pending");
+    } catch (err) {
+      toast(err.message, "error");
     } finally {
       setBusy(false);
     }
@@ -75,8 +98,9 @@ export default function TaskItem({ task, onUpdated, onDeleted }) {
     try {
       await api.deleteTask(task._id);
       onDeleted(task._id);
+      toast("Task deleted");
     } catch (err) {
-      setError(err.message);
+      toast(err.message, "error");
       setBusy(false);
     }
   }
@@ -101,10 +125,7 @@ export default function TaskItem({ task, onUpdated, onDeleted }) {
           <div className="row">
             <label>
               Status
-              <select
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-              >
+              <select value={status} onChange={(e) => setStatus(e.target.value)}>
                 <option value="pending">Pending</option>
                 <option value="in-progress">In progress</option>
                 <option value="completed">Completed</option>
@@ -141,9 +162,17 @@ export default function TaskItem({ task, onUpdated, onDeleted }) {
 
   // --- Read-only view ---
   return (
-    <li className="task">
+    <li className={`task ${done ? "task-done" : ""} ${overdue ? "task-overdue" : ""}`}>
       <div className="task-head">
-        <h4>{task.title}</h4>
+        <label className="check">
+          <input
+            type="checkbox"
+            checked={done}
+            onChange={toggleComplete}
+            disabled={busy}
+          />
+          <h4>{task.title}</h4>
+        </label>
         <span className={`badge status-${task.status}`}>
           {STATUS_LABELS[task.status] || task.status}
         </span>
@@ -152,7 +181,10 @@ export default function TaskItem({ task, onUpdated, onDeleted }) {
       {task.description && <p className="task-desc">{task.description}</p>}
 
       <div className="task-meta">
-        <span>📅 {formatDate(task.deadline)}</span>
+        <span className={overdue ? "overdue-text" : ""}>
+          📅 {formatDate(task.deadline)}
+          {overdue && <span className="overdue-tag">Overdue</span>}
+        </span>
         <div className="task-actions">
           <button
             type="button"
@@ -172,8 +204,6 @@ export default function TaskItem({ task, onUpdated, onDeleted }) {
           </button>
         </div>
       </div>
-
-      {error && <p className="error">{error}</p>}
     </li>
   );
 }

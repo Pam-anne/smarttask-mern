@@ -1,11 +1,13 @@
 import { useState } from "react";
 import { api } from "../api.js";
+import { useToast } from "../context/ToastContext.jsx";
 
 /**
  * Controlled form for creating a new task. On success it calls
  * onCreated(task) so the parent can add it to the list.
  */
 export default function TaskForm({ onCreated }) {
+  const toast = useToast();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [status, setStatus] = useState("pending");
@@ -23,6 +25,7 @@ export default function TaskForm({ onCreated }) {
 
       const res = await api.createTask(payload);
       onCreated(res.data);
+      toast("Task added");
 
       // Reset the form.
       setTitle("");
@@ -31,6 +34,7 @@ export default function TaskForm({ onCreated }) {
       setDeadline("");
     } catch (err) {
       setError(err.message);
+      toast(err.message, "error");
     } finally {
       setSaving(false);
     }

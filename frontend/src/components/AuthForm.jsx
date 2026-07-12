@@ -1,15 +1,18 @@
 import { useState } from "react";
 import { api } from "../api.js";
+import { useToast } from "../context/ToastContext.jsx";
 
 /**
  * Login / Register form. On success it saves the JWT and user, then
  * calls onAuth() so the app can switch to the tasks view.
  */
 export default function AuthForm({ onAuth }) {
+  const toast = useToast();
   const [mode, setMode] = useState("login"); // "login" | "register"
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -27,9 +30,9 @@ export default function AuthForm({ onAuth }) {
         ? await api.register(payload)
         : await api.login(payload);
 
-      // Persist token + user for later requests.
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data));
+      toast(`Welcome${isRegister ? "" : " back"}, ${res.data.name}!`);
       onAuth(res.data);
     } catch (err) {
       setError(err.message);
@@ -62,14 +65,25 @@ export default function AuthForm({ onAuth }) {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
-        <input
-          type="password"
-          placeholder="Password (min 6 characters)"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          minLength={6}
-          required
-        />
+
+        <div className="password-field">
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder="Password (min 6 characters)"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            minLength={6}
+            required
+          />
+          <button
+            type="button"
+            className="show-toggle"
+            onClick={() => setShowPassword((s) => !s)}
+            tabIndex={-1}
+          >
+            {showPassword ? "Hide" : "Show"}
+          </button>
+        </div>
 
         {error && <p className="error">{error}</p>}
 

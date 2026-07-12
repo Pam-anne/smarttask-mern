@@ -7,6 +7,11 @@ import {
   deleteTask,
 } from "../controllers/taskController.js";
 import { protect } from "../middleware/auth.js";
+import {
+  runValidation,
+  createTaskRules,
+  updateTaskRules,
+} from "../middleware/validate.js";
 
 const router = express.Router();
 
@@ -14,9 +19,16 @@ const router = express.Router();
 router.use(protect);
 
 // Collection routes
-router.route("/").get(getTasks).post(createTask);
+router
+  .route("/")
+  .get(getTasks)
+  .post(createTaskRules, runValidation, createTask);
 
 // Single-resource routes
-router.route("/:id").get(getTaskById).put(updateTask).delete(deleteTask);
+router
+  .route("/:id")
+  .get(getTaskById)
+  .put(updateTaskRules, runValidation, updateTask)
+  .delete(deleteTask);
 
 export default router;

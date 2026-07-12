@@ -1,12 +1,18 @@
 :root {
-  --bg: #f4f6fb;
+  --bg: #eef2f9;
+  --bg-grad-1: #6366f1;
+  --bg-grad-2: #8b5cf6;
   --card: #ffffff;
   --text: #1e293b;
   --muted: #64748b;
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --border: #e2e8f0;
+  --primary: #4f46e5;
+  --primary-dark: #4338ca;
+  --border: #e5e7eb;
   --danger: #dc2626;
+  --danger-bg: #fef2f2;
+  --shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
+  --shadow-lg: 0 10px 30px rgba(15, 23, 42, 0.1);
+  --radius: 14px;
 }
 
 * {
@@ -15,15 +21,17 @@
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
+  line-height: 1.5;
 }
 
+/* ---------- Layout ---------- */
 .app-shell {
-  max-width: 720px;
+  max-width: 760px;
   margin: 0 auto;
-  padding: 24px 16px 60px;
+  padding: 28px 18px 80px;
 }
 
 .centered {
@@ -32,12 +40,25 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  background: linear-gradient(135deg, var(--bg-grad-1), var(--bg-grad-2));
+}
+
+.centered .brand {
+  color: #fff;
+  font-size: 2rem;
+  letter-spacing: -0.5px;
+}
+
+.centered .brand::before {
+  content: "✓ ";
 }
 
 .brand {
   color: var(--primary);
   margin: 0;
-  font-size: 1.6rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.3px;
 }
 
 .topbar {
@@ -45,32 +66,37 @@ body {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 24px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
 }
 
 .user-box {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
 .layout {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 22px;
 }
 
+/* ---------- Cards ---------- */
 .card {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  border-radius: var(--radius);
+  padding: 22px;
+  box-shadow: var(--shadow);
 }
 
 .auth-card {
   width: 100%;
-  max-width: 380px;
-  margin-top: 16px;
+  max-width: 400px;
+  margin-top: 20px;
+  box-shadow: var(--shadow-lg);
+  border: none;
 }
 
 h2,
@@ -79,11 +105,16 @@ h4 {
   margin: 0 0 8px;
 }
 
+h3 {
+  font-size: 1.05rem;
+}
+
 .muted {
   color: var(--muted);
   font-size: 0.9rem;
 }
 
+/* ---------- Forms ---------- */
 form {
   display: flex;
   flex-direction: column;
@@ -95,11 +126,13 @@ input,
 textarea,
 select {
   width: 100%;
-  padding: 10px 12px;
+  padding: 11px 13px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 0.95rem;
   font-family: inherit;
+  background: #fff;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 input:focus,
@@ -107,6 +140,7 @@ textarea:focus,
 select:focus {
   outline: none;
   border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12);
 }
 
 .row {
@@ -118,27 +152,59 @@ select:focus {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  font-size: 0.85rem;
+  gap: 5px;
+  font-size: 0.8rem;
+  font-weight: 500;
   color: var(--muted);
 }
 
+.password-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-field input {
+  padding-right: 60px;
+}
+
+.show-toggle {
+  position: absolute;
+  right: 6px;
+  background: none;
+  color: var(--muted);
+  padding: 6px 8px;
+  font-size: 0.8rem;
+}
+
+.show-toggle:hover {
+  background: none;
+  color: var(--primary);
+}
+
+/* ---------- Buttons ---------- */
 button {
   background: var(--primary);
   color: #fff;
   border: none;
-  padding: 10px 16px;
-  border-radius: 8px;
+  padding: 11px 18px;
+  border-radius: 10px;
   font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: background 0.15s, transform 0.05s;
 }
 
 button:hover {
   background: var(--primary-dark);
 }
 
+button:active {
+  transform: translateY(1px);
+}
+
 button:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
 }
 
@@ -147,6 +213,7 @@ button:disabled {
   color: var(--primary);
   padding: 0;
   font-size: inherit;
+  font-weight: 500;
 }
 
 .link:hover {
@@ -159,17 +226,76 @@ button:disabled {
 }
 
 .switch {
-  margin-top: 16px;
+  margin-top: 18px;
   font-size: 0.9rem;
   color: var(--muted);
 }
 
 .error {
   color: var(--danger);
+  background: var(--danger-bg);
+  border-radius: 8px;
+  padding: 8px 10px;
   font-size: 0.85rem;
   margin: 0;
 }
 
+/* ---------- Stats bar ---------- */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.stat {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  box-shadow: var(--shadow);
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-label {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--muted);
+}
+
+.stat-total .stat-value {
+  color: var(--primary);
+}
+.stat-pending .stat-value {
+  color: #b45309;
+}
+.stat-in-progress .stat-value {
+  color: #1d4ed8;
+}
+.stat-completed .stat-value {
+  color: #15803d;
+}
+
+/* ---------- Controls ---------- */
+.controls {
+  margin-bottom: 18px;
+}
+
+.controls .row {
+  margin-top: 12px;
+}
+
+/* ---------- Task list ---------- */
 .task-list {
   list-style: none;
   margin: 12px 0 0;
@@ -182,19 +308,60 @@ button:disabled {
 .task {
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 14px 16px;
+  border-left: 4px solid var(--primary);
+  border-radius: 12px;
+  padding: 15px 17px;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.15s;
+}
+
+.task:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.task-done {
+  border-left-color: #22c55e;
+  opacity: 0.75;
+}
+
+.task-done .task-head h4 {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+.task-overdue {
+  border-left-color: var(--danger);
 }
 
 .task-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 8px;
+  gap: 10px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.check input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--primary);
+}
+
+.check h4 {
+  margin: 0;
+  font-size: 1rem;
 }
 
 .task-desc {
-  margin: 6px 0;
+  margin: 8px 0 0 28px;
   color: var(--muted);
   font-size: 0.9rem;
 }
@@ -203,28 +370,39 @@ button:disabled {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 8px;
+  margin-top: 10px;
+  padding-left: 28px;
   font-size: 0.85rem;
   color: var(--muted);
 }
 
-.controls {
-  margin-bottom: 16px;
+.overdue-text {
+  color: var(--danger);
+  font-weight: 500;
 }
 
-.controls .row {
-  margin-top: 12px;
+.overdue-tag {
+  margin-left: 8px;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .task-actions {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
 }
 
+/* ---------- Status badge ---------- */
 .badge {
-  font-size: 0.75rem;
-  padding: 3px 10px;
+  font-size: 0.72rem;
+  padding: 4px 11px;
   border-radius: 999px;
   white-space: nowrap;
   font-weight: 600;
@@ -243,4 +421,56 @@ button:disabled {
 .status-completed {
   background: #dcfce7;
   color: #166534;
+}
+
+/* ---------- Toasts ---------- */
+.toast-stack {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1000;
+}
+
+.toast {
+  min-width: 200px;
+  max-width: 320px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.9rem;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  animation: toast-in 0.2s ease-out;
+}
+
+.toast-success {
+  background: #16a34a;
+}
+
+.toast-error {
+  background: var(--danger);
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 560px) {
+  .stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .row {
+    flex-direction: column;
+  }
 }
