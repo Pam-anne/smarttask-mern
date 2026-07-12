@@ -29,11 +29,11 @@ const taskSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
-    // Reserved for Phase 2 (authentication). Optional for now.
+    // Owner of the task. Set from the authenticated user (Phase 2).
     user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      default: null,
+      required: true,
     },
   },
   {

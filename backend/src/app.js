@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import taskRoutes from "./routes/taskRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 import { notFound, errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
@@ -16,6 +17,7 @@ app.get("/", (req, res) => {
 });
 
 // --- API routes ---
+app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 
 // --- Error handling (must be last) ---
