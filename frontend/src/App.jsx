@@ -67,6 +67,11 @@ export default function App() {
           <TaskList
             tasks={tasks}
             loading={loading}
+            onUpdated={(updated) =>
+              setTasks((prev) =>
+                prev.map((t) => (t._id === updated._id ? updated : t))
+              )
+            }
             onDeleted={(id) =>
               setTasks((prev) => prev.filter((t) => t._id !== id))
             }

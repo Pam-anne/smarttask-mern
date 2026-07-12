@@ -34,5 +34,7 @@ export const api = {
   getTasks: () => request("/tasks"),
   createTask: (payload) =>
     request("/tasks", { method: "POST", body: payload }),
+  updateTask: (id, payload) =>
+    request(`/tasks/${id}`, { method: "PUT", body: payload }),
   deleteTask: (id) => request(`/tasks/${id}`, { method: "DELETE" }),
 };
